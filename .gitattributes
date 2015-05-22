@@ -1,0 +1,3 @@
+*.jl linguist-language=scheme
+.sawfishrc linguist-language=scheme
+.sawfish/custom linguist-language=scheme

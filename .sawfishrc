@@ -1,0 +1,4 @@
+; vim: set ft=lisp:
+
+(require 'sawfish-defaults)
+(require 'steerio.grid)

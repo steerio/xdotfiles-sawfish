@@ -142,11 +142,14 @@
 
   (defun grid-narrow-terminal (win #!optional height)
     (interactive "%f")
-    (if-let ((inc (assoc 'width-inc (window-size-hints win))))
-      (resize-window-to
-        win
-        (* grid-term-columns (cdr inc))
-        (or height (cdr (window-dimensions win))))))
+    (let ((hints (window-size-hints win)))
+      (if-let ((inc (assoc 'width-inc hints)))
+        (resize-window-to
+          win
+          (+ (* grid-term-columns (cdr inc))
+             (or (cdr (assoc 'base-width hints))
+                 0))
+          (or height (cdr (window-dimensions win)))))))
 
   (defun grid-side-terminal (win)
     (interactive "%f")

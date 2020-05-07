@@ -2,6 +2,8 @@ XTerm*reverseVideo:off
 XTerm*fullscreen:never
 XTerm*faceName:Droid Sans Mono Slashed for Powerline
 XTerm*faceSize:8
+XTerm*VT100.geometry: 80x24
+XTerm*font: 7x13
 
 XTerm*foreground: rgb:c0/c0/c0
 XTerm*background: rgb:00/00/00

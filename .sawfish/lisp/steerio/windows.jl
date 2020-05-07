@@ -1,7 +1,7 @@
 ; vim: set ft=lisp:
 
 (define-structure steerio.windows
-  (export range-limit pairs window-frame-overhead outer-resize-move)
+  (export range-limit pairs window-frame-overhead outer-resize-move head-move-resize head-move-to)
   (open rep sawfish.wm)
 
   (defun range-limit (maximum val)
@@ -34,9 +34,20 @@
            (window-frame-dimensions win)
            (window-dimensions win)))
 
-  (defun outer-resize-move (win dims pos)
-    (let ((dims (pairs - dims (window-frame-overhead win))))
+  (defun head-move-resize (win x y w h)
+    (let ((ofs (current-head-offset)))
       (move-resize-window-to
-         win
-         (car pos) (cdr pos)
-         (car dims) (cdr dims)))))
+        win
+        (+ (car pos) x)
+        (+ (cdr pos) y)
+        w h)))
+
+  (defun head-move-to (win x y)
+    (let ((ofs (current-head-offset)))
+      (move-window-to
+        win
+        (+ (car ofs) x)
+        (+ (cdr ofs) y))))
+
+  (defun outer-resize-move (win dims pos)
+    (head-move-resize win pos (pairs - dims (window-frame-overhead win)))))

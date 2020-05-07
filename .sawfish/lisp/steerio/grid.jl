@@ -2,7 +2,6 @@
 
 (define-structure steerio.grid
   (export grid-half grid-quarter
-          grid-move-left grid-move-right grid-move-up grid-move-down
           grid-narrow-terminal grid-side-terminal)
   (open rep sawfish.wm
         steerio.core steerio.windows)
@@ -54,16 +53,16 @@
              (1- ratio)
              (mul (/ center screen) ratio))
            (/ grid ratio)))
-      current-grid (screen-dimensions) (window-center win pos) ratios))
+      current-grid (current-head-dimensions) (window-center win pos) ratios))
 
   (defun cell-size ()
-    (pairs / (screen-dimensions) current-grid))
+    (pairs / (current-head-dimensions) current-grid))
 
   (defun cell-width ()
-    (/ (car (screen-dimensions)) grid-horizontal-cells))
+    (/ (car (current-head-dimensions)) grid-horizontal-cells))
 
   (defun cell-height ()
-    (/ (cdr (screen-dimensions)) grid-vertical-cells))
+    (/ (cdr (current-head-dimensions)) grid-vertical-cells))
 
   (defun in-cell-x (win)
     (div (window-x win) (truncate (cell-width))))
@@ -84,18 +83,6 @@
 
   (defun cell-at (pos)
     (pairs mul pos (cell-size)))
-
-  (defun move-x (win delta)
-    (move-window-to
-      win
-      (cell-x (+ delta (in-cell-x win)))
-      (window-y win)))
-
-  (defun move-y (win delta)
-    (move-window-to
-      win
-      (window-x win)
-      (cell-y (+ delta (in-cell-y win)))))
 
   ; Tiling
 
@@ -124,22 +111,6 @@
     (interactive "%f")
     (auto-tile win '(2 . 2)))
 
-  (defun grid-move-left (win)
-    (interactive "%f")
-    (move-x win -1))
-
-  (defun grid-move-right (win)
-    (interactive "%f")
-    (move-x win 1))
-
-  (defun grid-move-up (win)
-    (interactive "%f")
-    (move-y win -1))
-
-  (defun grid-move-down (win)
-    (interactive "%f")
-    (move-y win 1))
-
   (defun grid-narrow-terminal (win #!optional height)
     (interactive "%f")
     (let ((hints (window-size-hints win)))
@@ -153,15 +124,16 @@
 
   (defun grid-side-terminal (win)
     (interactive "%f")
-    (if (grid-narrow-terminal
-          win
-          (- (screen-height)
-             (cdr (window-frame-overhead win))))
-      (let ((width (car (window-frame-dimensions win))))
-        (move-window-to
-          win
-          (if (< (+ (window-x win) (/ width 2))
-                 (/ (screen-width) 2))
-            0
-            (- (screen-width) width))
-          0)))))
+    (let ((scr (current-head-dimensions)))
+      (if (grid-narrow-terminal
+            win
+            (- (cdr scr)
+               (cdr (window-frame-overhead win))))
+        (let ((width (car (window-frame-dimensions win))))
+          (head-move-to
+            win
+            (if (< (+ (window-x win) (/ width 2))
+                   (/ (car scr) 2))
+              0
+              (- (car scr) width))
+            0))))))
